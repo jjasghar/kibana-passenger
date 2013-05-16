@@ -1,5 +1,10 @@
 #Deploying Kibana as a Rack app with Passenger
 
+Credit where credit is due: git://github.com/nickchappell/personal-projects-docs.git
+
+Thanks Nick Chappell, I ran with it and made it my own.
+
+
 ###Modify older versions of Kibana to conform to Rack application standards
 
 If you download an older version of Kibana, you may have to make some modifications to it in order for it to be loaded as a Rack application.
@@ -10,15 +15,15 @@ In the folder the tarball extracted to, rename `static` to `public`, create a `t
 
 In `kibana.rb`, find the following line and change `static` to `public`:
 
-<pre>
+```
  set :public_folder, Proc.new { File.join(root, "static") }
-</pre> 
+``` 
 
 …to:
 
-<pre>
+```
 set :public_folder, Proc.new { File.join(root, "public") }
-</pre> 
+``` 
 
 ##Preliminary steps
 
@@ -40,9 +45,9 @@ We have to add the gems folder to our path so the Passenger-specific commands la
 
 Edit `/etc/bash.bashrc` and add the following line to the end:
 
-<pre>
+```
 export PATH=$PATH:/usr/local/bin:/var/lib/gems/1.8/bin:/var/lib/gems/1.9/bin
-</pre>
+```
 
 Once you're done, paste it into your terminal as a command and run it. This is just so we don't have to log out and then log back in for it to take effect.
 
@@ -56,9 +61,9 @@ Passenger comes with a script to configure itself with Apache automatically, but
 
 Install them:
 
-<pre>
+```
 apt-get install apache2-mpm-prefork apache2-prefork-dev libapr1-dev libaprutil1-dev
-</pre> 
+``` 
 
 ###Use the Passenger script to download, compile and install the Apache2 Passenger module
 
@@ -70,23 +75,23 @@ To have Passenger available as a module that can be loaded and unloaded, we have
 
 To allow Apache to load the Passenger module, create `passenger.load` and give it the following contents:
 
-<pre>
+```
 LoadModule passenger_module /var/lib/gems/1.8/gems/passenger-3.0.19/ext/apache2/mod_passenger.so
-</pre> 
+``` 
 
 To set some Passenger module options, create `passenger.conf` and give it the following contents:
 
-<pre>
+```
 PassengerRoot /var/lib/gems/1.8/gems/passenger-3.0.19
 PassengerRuby /usr/bin/ruby1.8
-</pre> 
+``` 
 
 To load the Passenger module, type the following command and then restart Apache:
 
-<pre>
+```
 sudo a2enmod passenger
 /etc/init.d/apache2 restart
-</pre>
+```
 
 **Note:** The above steps aren't required to have Passenger loaded as a module. You can paste the contents of `passenger.load` and `passenger.conf` in as one chunk at the bottom of `/etc/apache2/apache2.conf`. However, this would load Passenger every time Apache started and you would have to comment out or remove the lines to stop Passenger from loading, as opposed to just using the `a2enmod` and `a2dismod` commands.
 
@@ -119,7 +124,7 @@ sudo gem install kibana-0.2.0.gem
 
 Create `/etc/apache2/sites-available/kibana`, and place the following in there.
 
-<pre>
+```
 <VirtualHost *:80>
   ServerName myservername.com
   DocumentRoot /var/lib/gems/1.8/gems/kibana-0.2.0/public
@@ -130,15 +135,15 @@ Create `/etc/apache2/sites-available/kibana`, and place the following in there.
     </Directory>
 
 </VirtualHost>
-</pre>
+```
 
 Run the following to enable the site and disable default.
 
-<pre>
+```
 sudo a2dissite default
 sudo a2ensite kibana
 sudo /etc/init.d/apache2 restart
-</pre>
+```
 
 ##Nginx steps (TODO)
 
@@ -150,7 +155,7 @@ Passenger has an interactive script that does this, `passenger-install-nginx-mod
 
 In my case, it wanted some development OpenSSL libraries to be installed:
 
-<pre>
+```
 Installation instructions for required software
 
  * To install OpenSSL development headers:
@@ -160,7 +165,7 @@ If the aforementioned instructions didn't solve your problem, then please take
 a look at the Users Guide:
 
   /var/lib/gems/1.8/gems/passenger-3.0.19/doc/Users guide Nginx.html
-</pre>
+```
 
 I ran `sudo apt-get install libssl-dev` and then ran `passenger-install-nginx-module` again so it could pick up from where it left off.
 
@@ -172,7 +177,7 @@ Create a new file, `/etc/init.d/nginx`, grab the init.d script from [this page](
 
 Then, run `/usr/sbin/update-rc.d -f nginx defaults` to install it. You should see the output below if it's successful:
 
-<pre>
+```
 root@my-server: ~ > /usr/sbin/update-rc.d -f nginx defaults
  Adding system startup for /etc/init.d/nginx ...
    /etc/rc0.d/K20nginx -> ../init.d/nginx
@@ -182,7 +187,7 @@ root@my-server: ~ > /usr/sbin/update-rc.d -f nginx defaults
    /etc/rc3.d/S20nginx -> ../init.d/nginx
    /etc/rc4.d/S20nginx -> ../init.d/nginx
    /etc/rc5.d/S20nginx -> ../init.d/nginx
-</pre> 
+``` 
 
 Try starting, stopping and restarting Nginx via the init.d script. If you get a `command not found` error, you may have to edit the init script to point to the different locations of the Nginx binary and its PID files. The locations may be different because of where the Passenger install script placed them.
 
@@ -194,10 +199,10 @@ In my case:
 
 The following lines in the init.d script from the page linked to above have to be modified:
 
-<pre>
+```
 DAEMON=/opt/nginx/sbin/nginx
 ...
 PIDSPATH=/opt/nginx/logs/
 ...
 NGINX_CONF_FILE="/opt/nginx/conf/nginx.conf"
-</pre> 
+``` 
