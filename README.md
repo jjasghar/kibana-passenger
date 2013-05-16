@@ -118,7 +118,7 @@ Install the gem
 sudo gem install kibana-0.2.0.gem
 ```
 
-(by default it goes to `/var/lib/gems/1.8/gems/kibana-0.2.0/` if you are using rvm or something else you'll need to change the following sections.
+NOTE: by default it goes to `/var/lib/gems/1.8/gems/kibana-0.2.0/` if you are using rvm or something else you'll need to change the following sections.
 
 ###Creating a Kibana virtual host
 
