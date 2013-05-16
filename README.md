@@ -109,7 +109,7 @@ Build the gem
 
 ```shell
 cd Kibana
-gem build kibana.gemsp
+gem build kibana.gemspec
 ```
 
 Install the gem
