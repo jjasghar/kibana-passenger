@@ -1,6 +1,6 @@
 #Deploying Kibana as a Rack app with Passenger
 
-Credit where credit is due: (Thanks Nick Chappell)[http://github.com/nickchappell/personal-projects-docs.git], I ran with it and made it my own.
+Credit where credit is due: [Thanks Nick Chappel](http://github.com/nickchappell/personal-projects-docs.git), I ran with it and made it my own.
 
 
 ###Modify older versions of Kibana to conform to Rack application standards
@@ -51,7 +51,7 @@ Once you're done, paste it into your terminal as a command and run it. This is j
 
 ##Apache steps
 
-Adapted from this guide: [http://www.modrails.com/documentation/Users%20guide%20Apache.html](http://www.modrails.com/documentation/Users%20guide%20Apache.html)
+Adapted from this guide: [Apache Users Guide](http://www.modrails.com/documentation/Users%20guide%20Apache.html)
 
 ###Install packages
 
