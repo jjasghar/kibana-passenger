@@ -1,8 +1,6 @@
 #Deploying Kibana as a Rack app with Passenger
 
-Credit where credit is due: git://github.com/nickchappell/personal-projects-docs.git
-
-Thanks Nick Chappell, I ran with it and made it my own.
+Credit where credit is due: (Thanks Nick Chappell)[http://github.com/nickchappell/personal-projects-docs.git], I ran with it and made it my own.
 
 
 ###Modify older versions of Kibana to conform to Rack application standards
@@ -19,7 +17,7 @@ In `kibana.rb`, find the following line and change `static` to `public`:
  set :public_folder, Proc.new { File.join(root, "static") }
 ``` 
 
-…to:
+to:
 
 ```
 set :public_folder, Proc.new { File.join(root, "public") }
@@ -145,64 +143,3 @@ sudo a2ensite kibana
 sudo /etc/init.d/apache2 restart
 ```
 
-##Nginx steps (TODO)
-
-Adapted from this guide: [http://www.modrails.com/documentation/Users%20guide%20Nginx.html](http://www.modrails.com/documentation/Users%20guide%20Nginx.html)
-
-###Let Passenger compile and install Nginx with Passenger support
-
-Passenger has an interactive script that does this, `passenger-install-nginx-module` (this is in `/usr/local/bin`, which we added to our path above). If it runs into any problems, it stops and tells you want to do before running it again.
-
-In my case, it wanted some development OpenSSL libraries to be installed:
-
-```
-Installation instructions for required software
-
- * To install OpenSSL development headers:
-   Please run apt-get install libssl-dev as root.
-
-If the aforementioned instructions didn't solve your problem, then please take
-a look at the Users Guide:
-
-  /var/lib/gems/1.8/gems/passenger-3.0.19/doc/Users guide Nginx.html
-```
-
-I ran `sudo apt-get install libssl-dev` and then ran `passenger-install-nginx-module` again so it could pick up from where it left off.
-
-When it asks if you want a simple or advanced install, select simple. The default answers for questions it asks for any questions (in brackets) are fine.
-
-Nginx will be installed and will start running automatically. To be able to start and stop it, you'll want to create an **init.d script**.
-
-Create a new file, `/etc/init.d/nginx`, grab the init.d script from [this page](http://wiki.nginx.org/Nginx-init-ubuntu) and paste it into the file.
-
-Then, run `/usr/sbin/update-rc.d -f nginx defaults` to install it. You should see the output below if it's successful:
-
-```
-root@my-server: ~ > /usr/sbin/update-rc.d -f nginx defaults
- Adding system startup for /etc/init.d/nginx ...
-   /etc/rc0.d/K20nginx -> ../init.d/nginx
-   /etc/rc1.d/K20nginx -> ../init.d/nginx
-   /etc/rc6.d/K20nginx -> ../init.d/nginx
-   /etc/rc2.d/S20nginx -> ../init.d/nginx
-   /etc/rc3.d/S20nginx -> ../init.d/nginx
-   /etc/rc4.d/S20nginx -> ../init.d/nginx
-   /etc/rc5.d/S20nginx -> ../init.d/nginx
-``` 
-
-Try starting, stopping and restarting Nginx via the init.d script. If you get a `command not found` error, you may have to edit the init script to point to the different locations of the Nginx binary and its PID files. The locations may be different because of where the Passenger install script placed them.
-
-In my case: 
-
-* the Nginx binary was located at `/opt/nginx/sbin/nginx`
-* the Nginx config file was located at `/opt/nginx/conf/nginx.conf`
-* the PID file was located at `/opt/nginx/logs/nginx.pid`
-
-The following lines in the init.d script from the page linked to above have to be modified:
-
-```
-DAEMON=/opt/nginx/sbin/nginx
-...
-PIDSPATH=/opt/nginx/logs/
-...
-NGINX_CONF_FILE="/opt/nginx/conf/nginx.conf"
-``` 
